@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLBB Nexus Portal | Layla Nexus Sea</title>
+    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (Ikon) --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Library untuk Fungsionalitas (TETAP SAMA) --><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        /* --- [GAYA DARI KODE 2 DIMULAI] --- */
+
+        /* Impor Font (dari Kode 2) */
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+        /* Variabel Warna (dari Kode 2) */
+        :root {
+            --mlbb-blue: #00d4ff;
+            --mlbb-purple: #9d4edd;
+            --mlbb-pink: #ff006e;
+            --mlbb-dark: #0a0014;
+            --mlbb-darker: #1a0033;
+
+            /* [ADAPTASI] Variabel dari Kode 1 yang digunakan oleh JS, dipetakan ke warna Kode 2 */
+            --neon-blue: #00d4ff;
+            --neon-pink: #ff006e;
+            --neon-purple: #9d4edd;
+            --dark-bg: #0a0014;
+            --darker-bg: #1a0033;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Setup Dasar Body (dari Kode 2) */
+        body {
+            font-family: 'Chakra Petch', sans-serif; /* Font default dari Kode 2 */
+            background: var(--dark-bg);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            
+            /* [PERBAIKAN FOOTER] (dari Kode 1) */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Helper Class untuk Font (Diadaptasi ke font Kode 2) */
+        .font-orbitron { font-family: 'Rajdhani', sans-serif; } /* Orbitron -> Rajdhani */
+        .font-rajdhani { font-family: 'Chakra Petch', sans-serif; } /* Rajdhani -> Chakra Petch */
+        .font-exo2 { font-family: 'Rajdhani', sans-serif; } /* Exo 2 -> Rajdhani */
+
+        /* [DIHAPUS] CSS Intro dari Kode 2 (#intro-overlay, #skip-intro) tidak digunakan */
+
+        /* Latar Belakang & Efek (Struktur HTML Kode 1) */
+        #bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* Di bawah scanlines */
+            overflow: hidden;
+        }
+
+        /* [ADAPTASI] Class .bg-media dari Kode 1 dipertahankan untuk JS */
+        .bg-media {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6) saturate(1.2); /* Style asli dipertahankan */
+            transition: transform 0.5s ease, width 0.5s ease, height 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+            will-change: transform, opacity, filter;
+        }
+
+        /* Opasitas video & gambar dari Kode 1 dipertahankan untuk JS */
+        #bg-video {
+            opacity: 0.35;
+            z-index: 1;
+        }
+        
+        #bg-image {
+            opacity: 0; 
+            z-index: 0; 
+        }
+
+        /* Fitur Light Mode (dari Kode 1) dipertahankan untuk JS */
+        body.light-mode #bg-image {
+            opacity: 1 !important; 
+            filter: brightness(1.2) contrast(1.05) saturate(1.15);
+        }
+        body.light-mode #bg-video {
+            opacity: 0.35;
+            z-index: 1;
+        }
+        
+        /* Rotasi Desktop (dari Kode 1) dipertahankan */
+        @media (min-width: 1024px) {
+            .bg-media {
+                width: 100vh; 
+                height: 100vw;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-90deg);
+            }
+        }
+        
+        /* Canvas Partikel (dari Kode 1) */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Di atas bg, di bawah scanlines */
+            pointer-events: none;
+        }
+
+        /* Efek Scanlines (dari Kode 2) */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(157, 78, 221, 0.03) 50%, transparent 100%),
+                repeating-linear-gradient(0deg, rgba(0, 212, 255, 0.03) 0px, transparent 2px, transparent 4px, rgba(0, 212, 255, 0.03) 6px);
+            z-index: 1; /* [ADAPTASI] Di atas partikel */
+            pointer-events: none;
+            animation: scanlines 8s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(20px); }
+        }
+
+        /* [DIHAPUS] Efek glowPulse & gridMove dari Kode 1 */
+        
+        /* Lapisan Konten Utama (dari Kode 1) */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Perbaikan Footer (dari Kode 1) */
+        main.content-layer {
+            flex-grow: 1; 
+        }
+
+        /* Efek Teks Neon (Diadaptasi dari Kode 1, menggunakan warna Kode 2) */
+        .neon-text-blue {
+            color: var(--mlbb-blue);
+            text-shadow: 0 0 10px var(--mlbb-blue); 
+        }
+        .neon-text-pink {
+            color: var(--mlbb-pink);
+            text-shadow: 0 0 8px var(--mlbb-pink), 0 0 16px rgba(255, 0, 110, 0.7);
+        }
+        .neon-text-purple {
+            color: var(--mlbb-purple);
+            text-shadow: 0 0 8px var(--mlbb-purple); 
+        }
+
+        /* Efek Glitch (dari Kode 2, diterapkan ke class Kode 1 .glitch-effect) */
+        .glitch-effect {
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 900;
+            font-size: 4rem; /* dari Kode 2 */
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 
+                0 0 10px var(--mlbb-blue),
+                0 0 20px var(--mlbb-blue),
+                0 0 40px var(--mlbb-purple);
+            animation: glitch-text 5s infinite;
+        }
+        /* [DIHAPUS] Efek ::before, ::after, dan keyframes glitch1/glitch2 dari Kode 1 */
+        
+        /* Keyframes Glitch (dari Kode 2) */
+        @keyframes glitch-text {
+            0%, 100% { text-shadow: 0 0 10px var(--mlbb-blue), 0 0 20px var(--mlbb-blue), 0 0 40px var(--mlbb-purple); }
+            25% { text-shadow: 2px 2px 10px var(--mlbb-pink), -2px -2px 20px var(--mlbb-blue); }
+            50% { text-shadow: -2px 2px 15px var(--mlbb-purple), 2px -2px 25px var(--mlbb-pink); }
+            75% { text-shadow: 2px -2px 10px var(--mlbb-blue), -2px 2px 20px var(--mlbb-purple); }
+        }
+
+        /* [DIHAPUS] .glass-morphism dari Kode 1, diganti style langsung */
+        
+        /* Navbar (dari Kode 2, diterapkan ke class Kode 1 .navbar) */
+        .navbar {
+            background: rgba(26, 0, 51, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--mlbb-blue), var(--mlbb-purple), var(--mlbb-pink)) 1;
+            box-shadow: 0 5px 30px rgba(157, 78, 221, 0.3);
+            transition: all 0.3s ease; /* [ADAPTASI] dari Kode 1 */
+        }
+
+        /* Kontrol Tinggi Navbar (dari Kode 1) */
+        .navbar .container > div {
+            height: 70px;
+            transition: height 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            .navbar .container > div {
+                height: 90px;
+            }
+        }
+
+        /* Style Logo (dari Kode 2, diterapkan ke ID & elemen Kode 1) */
+        #logo-container {
+            position: relative;
+            padding: 0.5rem;
+        }
+        /* Style <img> di dalam #logo-container (menggantikan .logo-glow) */
+        #logo-container img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--mlbb-blue), var(--mlbb-purple));
+            box-shadow: 0 0 25px var(--mlbb-purple), inset 0 0 15px rgba(255, 255, 255, 0.3);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        /* Keyframes Logo (dari Kode 2) */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 25px var(--mlbb-purple), inset 0 0 15px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 40px var(--mlbb-blue), inset 0 0 25px rgba(255, 255, 255, 0.5); }
+        }
+
+        /* Style <span> di dalam #logo-container (menggantikan .brand-text) */
+        #logo-container span {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--mlbb-blue), var(--mlbb-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+        }
+
+        /* Item Navigasi (dari Kode 1, warna diadaptasi) */
+        .nav-item {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-item:hover span, .nav-item:hover i {
+            color: var(--mlbb-pink); /* Warna Kode 2 */
+            text-shadow: 0 0 10px var(--mlbb-pink);
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--mlbb-blue), var(--mlbb-purple)); /* Warna Kode 2 */
+            transition: width 0.3s ease;
+            border-radius: 1px;
+        }
+        .nav-item:hover::after {
+            width: 100%;
+        }
+
+        /* Dropdown Menu (dari Kode 2, diterapkan ke class Kode 1 .dropdown) */
+        .dropdown {
+            display: none;
+            position: absolute;
+            background: rgba(26, 0, 51, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--mlbb-purple);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(157, 78, 221, 0.5);
+            min-width: 320px; /* dari Kode 2 */
+            padding: 1.5rem; /* dari Kode 2 */
+            margin-top: 0.75rem; /* dari Kode 1 */
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .group:hover .dropdown {
+            display: block;
+        }
+
+        /* Mobile Menu (dari Kode 2, diterapkan ke ID Kode 1) */
+        #mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9); /* dari Kode 2 .modal-overlay */
+            backdrop-filter: blur(10px); /* dari Kode 2 .modal-overlay */
+            z-index: 55;
+            transition: opacity 0.3s ease;
+        }
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 80%;
+            max-width: 300px;
+            background: rgba(26, 0, 51, 0.98); /* dari Kode 2 #mobile-menu */
+            backdrop-filter: blur(20px); /* dari Kode 2 #mobile-menu */
+            border-left: 2px solid var(--mlbb-purple); /* Diadaptasi dari Kode 2 */
+            z-index: 60;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        #mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Tombol Neon (dari Kode 2 .neon-btn, diterapkan ke class Kode 1 .btn-neon) */
+        .btn-neon {
+            position: relative;
+            padding: 0.75rem 1.5rem; /* Ukuran disesuaikan */
+            background: rgba(157, 78, 221, 0.1);
+            border: 2px solid var(--mlbb-purple);
+            color: var(--mlbb-blue);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem; /* [ADAPTASI] dari Kode 1 agar tidak terlalu tajam */
+            font-family: 'Rajdhani', sans-serif; /* [ADAPTASI] Font dari Kode 2 */
+            text-shadow: 0 0 5px currentColor; /* [ADAPTASI] dari Kode 1 */
+        }
+        .btn-neon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent); /* dari Kode 2 */
+            transition: left 0.5s ease;
+            z-index: -1;
+        }
+        .btn-neon:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--mlbb-blue);
+            color: white;
+            box-shadow: 0 0 20px var(--mlbb-blue), inset 0 0 20px rgba(0, 212, 255, 0.2);
+            transform: translateY(-2px);
+            text-shadow: none; /* [ADAPTASI] */
+        }
+        .btn-neon:hover::before {
+            left: 100%;
+        }
+        
+        /* Feedback Tombol (dari Kode 1) */
+        .btn-neon:active {
+            transform: translateY(0) scale(0.95);
+            box-shadow: 0 0 5px currentColor;
+            transition-duration: 0.1s;
+        }
+        
+        /* Varian Warna Tombol (Diadaptasi dari Kode 1, menggunakan style Kode 2) */
+        .btn-neon-blue {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--mlbb-blue);
+            color: var(--mlbb-blue);
+        }
+        .btn-neon-blue:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--mlbb-blue);
+            color: white;
+            box-shadow: 0 0 20px var(--mlbb-blue);
+        }
+        
+        .btn-neon-pink {
+            background: rgba(255, 0, 110, 0.1);
+            border-color: var(--mlbb-pink);
+            color: var(--mlbb-pink);
+        }
+        .btn-neon-pink:hover {
+            background: rgba(255, 0, 110, 0.2);
+            border-color: var(--mlbb-pink);
+            color: white;
+            box-shadow: 0 0 20px var(--mlbb-pink);
+        }
+
+        .btn-neon-purple {
+            background: rgba(157, 78, 221, 0.1);
+            border-color: var(--mlbb-purple);
+            color: var(--mlbb-purple);
+        }
+        .btn-neon-purple:hover {
+            background: rgba(157, 78, 221, 0.2);
+            border-color: var(--mlbb-purple);
+            color: white;
+            box-shadow: 0 0 20px var(--mlbb-purple);
+        }
+
+        /* Tombol non-neon (dari Kode 1, diadaptasi) */
+        .btn-secondary {
+            font-family: 'Rajdhani', sans-serif;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--mlbb-pink);
+            color: var(--mlbb-pink);
+        }
+
+        /* Portal Cards (dari Kode 2, diterapkan ke class Kode 1 .portal-card) */
+        .portal-card {
+            position: relative;
+            background: linear-gradient(135deg, rgba(26, 0, 51, 0.8), rgba(10, 0, 20, 0.9));
+            border: 2px solid transparent; /* JS akan menimpa border-color */
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            height: 100%; /* [ADAPTASI] dari Kode 1 untuk tinggi yang sama */
+        }
+
+        /* Efek border hover (dari Kode 2) */
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--mlbb-blue), var(--mlbb-purple), var(--mlbb-pink));
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .portal-card:hover::before {
+            opacity: 1;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            /* [ADAPTASI] Bayangan mengambil warna dari 'currentColor' (ditetapkan oleh JS) */
+            box-shadow: 0 15px 40px currentColor; 
+        }
+
+        /* Ikon Kartu (dari Kode 2, diterapkan ke elemen <i> dan <img> Kode 1) */
+        .portal-card i, .portal-card img {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 15px currentColor);
+            animation: float 3s ease-in-out infinite;
+            /* [ADAPTASI] dari Kode 1 untuk konsistensi <img> */
+            height: 48px; 
+            width: 48px;
+            object-fit: contain;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Tombol Hapus pada Card (dari Kode 1, warna diadaptasi) */
+        .delete-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            color: rgba(255, 100, 100, 0.5);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 20;
+            opacity: 0.7;
+        }
+        .portal-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .delete-btn:hover {
+            color: var(--mlbb-pink); /* Warna Kode 2 */
+            background: rgba(0, 0, 0, 0.4);
+            transform: scale(1.1);
+            text-shadow: 0 0 10px var(--mlbb-pink);
+        }
+
+        /* Profile Image (dari Kode 2, diterapkan ke class Kode 1 .profile) */
+        .profile {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--mlbb-pink);
+            box-shadow: 
+                0 0 30px var(--mlbb-pink),
+                0 0 50px var(--mlbb-purple),
+                inset 0 0 20px rgba(255, 0, 110, 0.3);
+            overflow: hidden;
+            margin: 0 auto 2rem;
+            position: relative;
+            animation: rotate-border 4s linear infinite;
+        }
+
+        @keyframes rotate-border {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        /* [ADAPTASI] Terapkan ke <video> di dalam .profile */
+        .profile video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+            /* [ADAPTASI] dari Kode 1 untuk positioning video */
+            object-position: 50% 25%;
+            will-change: transform;
+        }
+        /* [DIHAPUS] .profile::before dan @keyframes rotate dari Kode 1 */
+        
+        /* Time Display (dari Kode 2, diterapkan ke class Kode 1 .time-container) */
+        .time-container {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 78, 221, 0.1));
+            border: 2px solid var(--mlbb-purple);
+            border-radius: 20px;
+            padding: 1.5rem 3rem;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3), inset 0 0 20px rgba(0, 212, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        /* [DIHAPUS] .time-container::before dan @keyframes scan dari Kode 1 */
+
+        /* Teks Waktu (dari Kode 2, diterapkan ke ID Kode 1) */
+        #time {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 3rem;
+            color: var(--mlbb-blue);
+            text-shadow: 0 0 20px var(--mlbb-blue);
+        }
+        #date {
+            font-family: 'Chakra Petch', sans-serif; /* Diadaptasi */
+            font-size: 1.2rem;
+            color: var(--mlbb-purple);
+            text-shadow: 0 0 10px var(--mlbb-purple);
+        }
+
+        /* Modal (dari Kode 2, diterapkan ke class Kode 1) */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease; /* dari Kode 1 */
+        }
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 0, 51, 0.95), rgba(10, 0, 20, 0.95));
+            border: 2px solid var(--mlbb-purple);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(157, 78, 221, 0.5);
+            animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* dari Kode 1 */
+        }
+        /* Keyframes Modal (dari Kode 1) */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn {
+            from { transform: translateY(-30px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Input & Textarea (dari Kode 2, diterapkan ke elemen Kode 1) */
+        input, textarea, select {
+            background: rgba(10, 0, 20, 0.8) !important; /* !important dari Kode 1 */
+            border: 2px solid var(--mlbb-purple);
+            color: white;
+            padding: 0.75rem; /* dari Kode 2 */
+            border-radius: 10px; /* dari Kode 2 */
+            transition: all 0.3s ease;
+            font-family: 'Chakra Petch', sans-serif; /* [ADAPTASI] */
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--mlbb-blue);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            background: rgba(10, 0, 20, 0.9) !important; /* Diadaptasi */
+        }
+        /* Option (dari Kode 1, diadaptasi) */
+        select option {
+            background: var(--dark-bg);
+            color: white;
+            padding: 8px;
+        }
+
+        /* Placeholder styling (dari Kode 1) */
+        ::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            opacity: 1;
+        }
+
+        /* Helper <code> (dari Kode 1, diadaptasi) */
+        .modal-content code {
+            background: rgba(0,0,0,0.3);
+            color: var(--mlbb-pink);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Rajdhani', sans-serif; /* Diadaptasi */
+        }
+
+        /* Scrollbar (dari Kode 2) */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--mlbb-darker); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--mlbb-blue), var(--mlbb-purple));
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--mlbb-purple), var(--mlbb-pink));
+        }
+
+        /* [DIHAPUS] .logo-pulse dan keyframes dari Kode 1 (diganti .pulse-glow) */
+
+        /* Footer (dari Kode 1, diadaptasi) */
+        footer {
+            background: rgba(5, 0, 8, 0.8);
+            border-top: 1px solid rgba(0, 212, 255, 0.2); /* Warna Kode 2 */
+            margin-top: auto;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        footer p:first-child {
+            font-size: 13px;
+            font-family: 'Chakra Petch', sans-serif; /* Font Kode 2 */
+        }
+        footer p:last-child {
+            font-family: 'Rajdhani', sans-serif; /* Font Kode 2 */
+            /* [ADAPTASI] Terapkan class .neon-text-purple */
+            color: var(--mlbb-purple);
+            text-shadow: 0 0 8px var(--mlbb-purple);
+        }
+
+        /* Responsif (dari Kode 2, diadaptasi ke class/ID Kode 1) */
+        @media (max-width: 768px) {
+            .glitch-effect {
+                font-size: 2.5rem;
+            }
+            #time {
+                font-size: 2rem;
+            }
+            #logo-container span {
+                font-size: 1.2rem;
+            }
+        }
+        /* --- [GAYA DARI KODE 2 SELESAI] --- */
+    </style>
+</head>
+<body>
+
+    <!-- STRUKTUR HTML DARI KODE 1 (TIDAK BERUBAH) -->
+
+    <!-- Background & Partikel (Struktur HTML Sama) -->
+    <div id="bg-container">
+        <!-- Video background -->
+        <video id="bg-video" class="bg-media" autoplay muted playsinline>
+            <source src="https://files.catbox.moe/669xox.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <!-- Gambar fallback yang sudah ada -->
+        <img id="bg-image" class="bg-media" src="https://i.imghippo.com/files/IXTw5166Kqs.jpg" alt="MLBB Nexus Background">
+    </div>
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Navbar (Struktur HTML Refactor) -->
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 content-layer">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div id="logo-container" class="flex items-center cursor-pointer">
+                    <!-- [MODIFIKASI] class logo-pulse dihapus, style via #logo-container img -->
+                    <img src="https://i.imghippo.com/files/EePl9866XxI.png" alt="MLBB Nexus Logo" class="h-10 w-auto">
+                    <!-- [MODIFIKASI] class font-orbitron akan di-style ulang oleh CSS baru -->
+                    <span class="font-bold text-xl tracking-wider ml-3 font-orbitron">MLBB LAYLA</span>
+                </div>
+
+                <!-- Navigasi Desktop (Refactor) -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <!-- Tombol Pengaturan -->
+                    <div class="nav-item relative group">
+                        <button class="flex items-center space-x-2 neon-text-blue font-medium text-sm uppercase font-orbitron">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                            <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-hover:rotate-180"></i>
+                        </button>
+                        <!-- Dropdown Menu (Refactor) -->
+                        <div class="dropdown absolute right-0 mt-2 w-80 rounded-lg p-4">
+                            <h3 class="text-sm neon-text-pink mb-3 uppercase tracking-wider font-orbitron">Portal Management</h3>
+                            <button onclick="showAddLinkModal()" class="btn-neon btn-neon-blue w-full text-sm mb-3">
+                                <i class="fas fa-plus mr-2"></i>Add New Portal
+                            </button>
+
+                            <h3 class="text-sm neon-text-blue mt-4 mb-3 uppercase tracking-wider font-orbitron">Data Management</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="importData()" class="btn-neon btn-neon-purple w-full text-xs"><i class="fas fa-upload mr-1"></i>Import</button>
+                                <button onclick="backupData()" class="btn-neon btn-neon-purple w-full text-xs"><i class="fas fa-download mr-1"></i>Backup</button>
+                            </div>
+
+                            <h3 class="text-sm neon-text-pink mt-4 mb-3 uppercase tracking-wider font-orbitron">System Reset</h3>
+                            <button onclick="showConfirmationModal('Yakin ingin mereset semua pengaturan?', resetAllSettings)"
+                                    class="btn-neon btn-neon-pink w-full text-sm mb-3">
+                                <i class="fas fa-undo mr-2"></i>Reset All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Menu Mobile (Ikon Baru) -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="neon-text-pink text-3xl focus:outline-none">
+                        <i class="fas fa-bars-staggered"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu (Struktur HTML Refactor Total) -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 z-50 hidden md:hidden" onclick="closeMobileMenu()"></div>
+    <div id="mobile-menu" class="fixed top-0 right-0 h-full w-4/5 max-w-xs z-[60] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden p-6 flex flex-col space-y-4">
+        
+        <!-- Header Menu Mobile -->
+        <div class="flex justify-between items-center pb-4 border-b border-purple-500/30">
+            <span class="font-orbitron neon-text-blue text-lg">MENU</span>
+            <button onclick="closeMobileMenu()" class="neon-text-pink text-2xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Konten Menu Mobile -->
+        <div class="flex-grow overflow-y-auto">
+            <h3 class="text-sm neon-text-pink mb-3 uppercase tracking-wider font-orbitron">Portal</h3>
+            <button onclick="showAddLinkModal(); closeMobileMenu();" class="btn-neon btn-neon-blue w-full text-sm mb-4">
+                <i class="fas fa-plus mr-2"></i>Add Portal
+            </button>
+
+            <h3 class="text-sm neon-text-blue mt-4 mb-3 uppercase tracking-wider font-orbitron">Data</h3>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <button onclick="importData(); closeMobileMenu();" class="btn-neon btn-neon-purple w-full text-xs"><i class="fas fa-upload mr-1"></i>Import</button>
+                <button onclick="backupData(); closeMobileMenu();" class="btn-neon btn-neon-purple w-full text-xs"><i class="fas fa-download mr-1"></i>Backup</button>
+            </div>
+
+            <h3 class="text-sm neon-text-pink mt-4 mb-3 uppercase tracking-wider font-orbitron">Sistem</h3>
+            <button onclick="showConfirmationModal('Yakin ingin mereset?', resetAllSettings); closeMobileMenu();"
+                    class="btn-neon btn-neon-pink w-full text-sm mb-4">
+                <i class="fas fa-undo mr-2"></i>Reset All
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Main Content (Refactor) -->
+    <main class="container mx-auto px-4 py-8 relative content-layer pt-28">
+        <header class="text-center mb-12">
+            <!-- Profile (MODIFIKASI: Diubah dari <img> menjadi <video>) -->
+            <div class="profile">
+                <!-- Ganti img dengan video, tambahkan object-position -->
+                <video src="https://files.catbox.moe/g9p1at.mp4" alt="Profile Video" autoplay loop muted playsinline
+                       style="object-position: 50% 25%; will-change: transform;"></video>
+            </div>
+            <!-- Judul (Tidak berubah, sudah bagus) -->
+            <div class="relative inline-block mb-6">
+                <h1 class="glitch-effect text-5xl md:text-7xl font-bold mb-4" data-text="LAYLA NEXUS SEA">LAYLA NEXUS SEA</h1>
+            </div>
+            <p class="text-lg md:text-xl neon-text-purple uppercase tracking-wider font-semibold font-orbitron">MLBB Creator & Web Developer</p>
+            <p class="max-w-2xl mx-auto mt-6 text-base md:text-lg text-gray-300 leading-relaxed font-rajdhani">
+            </p>
+        </header>
+
+        <!-- Tampilan Waktu (Tidak berubah, sudah bagus) -->
+        <div class="flex justify-center mb-12">
+            <div class="time-container rounded-lg p-4 text-center">
+                <div id="time" class="text-3xl md:text-4xl font-bold font-orbitron">00:00:00</div>
+                <div id="date" class="text-base md:text-lg uppercase tracking-wider mt-1 font-rajdhani">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Grid Portal (Layout Diberi Jarak Lebih) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 mb-12" id="portals-grid">
+            <!-- Kartu Portal akan di-render oleh JS di sini -->
+        </div>
+    </main>
+
+    <!-- Footer (Refactor) -->
+    <footer class="text-white text-center content-layer">
+        <p class="text-sm opacity-80 font-rajdhani">© 2025 Created by Layla Nexus Sea | All Rights Reserved</p>
+        <p class="text-xs mt-2 font-orbitron">Powered by Uranus Support Technology</p>
+    </footer>
+
+    <!-- Modal Tambah Portal (Refactor) -->
+    <div id="add-portal-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden modal-overlay">
+        <div class="modal-content rounded-xl p-5 md:p-6 max-w-sm w-full mx-6 relative">
+            <button onclick="document.getElementById('add-portal-modal').classList.add('hidden')"
+                    class="absolute top-4 right-4 text-3xl neon-text-pink hover:scale-125 transition-all">×</button>
+            <h2 class="text-2xl neon-text-pink mb-3 uppercase tracking-wider font-orbitron font-bold">Create New Portal</h2>
+
+            <form id="portal-form" class="space-y-1">
+                <div>
+                    <label for="portal-name" class="block mb-1 neon-text-blue uppercase text-sm tracking-wider font-orbitron">Portal Name</label>
+                    <input type="text" id="portal-name" class="w-full p-3 rounded-lg text-white font-rajdhani text-base" placeholder="Portal Title" required>
+                </div>
+                <div>
+                    <label for="portal-url" class="block mb-1 neon-text-blue uppercase text-sm tracking-wider font-orbitron">Destination URL</label>
+                    <input type="url" id="portal-url" class="w-full p-3 rounded-lg text-white font-rajdhani text-base" placeholder="https://your-link.com" required>
+                </div>
+
+                <!-- Input Ikon diubah menjadi Select -->
+                <div>
+                    <label for="portal-icon" class="block mb-1 neon-text-blue uppercase text-sm tracking-wider font-orbitron">Pilih Ikon Portal</label>
+                    <select id="portal-icon" class="w-full p-3 rounded-lg text-white font-rajdhani text-base appearance-none">
+                        <option value="fas fa-globe">🌐 Globe (Default)</option>
+                        <option value="fas fa-link">🔗 Link</option>
+                        <option value="fas fa-home">🏠 Home</option>
+                        <option value="fas fa-gamepad">🎮 Game</option>
+                        <option value="fas fa-wallet">💰 Wallet</option>
+                        <option value="fas fa-shopping-cart">🛒 Store</option>
+                        <option value="fas fa-star">⭐ Favorite</option>
+                        <option value="fas fa-book">📚 Book</option>
+                        <option value="fas fa-video">🎬 Video</option>
+                        <option value="fas fa-music">🎵 Music</option>
+                        <option value="fas fa-image">🖼️ Image</option>
+                        <option value="fas fa-info-circle">ℹ️ Info</option>
+                        <option value="fab fa-whatsapp">💬 WhatsApp</option>
+                        <option value="fab fa-facebook">👍 Facebook</option>
+                        <option value="fab fa-instagram">📸 Instagram</option>
+                        <option value="fab fa-youtube">▶️ YouTube</option>
+                        <option value="fab fa-tiktok">🎵 TikTok</option>
+                        <option value="fab fa-discord">🗣️ Discord</option>
+                        <option value="fab fa-telegram">✈️ Telegram</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="portal-description" class="block mb-1 neon-text-blue uppercase text-sm tracking-wider font-orbitron">Description</label>
+                    <textarea id="portal-description" rows="2" class="w-full p-3 rounded-lg text-white font-rajdhani text-base" placeholder="Short description..."></textarea>
+                </div>
+                <div>
+                    <label class="block mb-1 neon-text-blue uppercase text-sm tracking-wider font-orbitron">Portal Theme</label>
+                    <div class="flex justify-around pt-1">
+                        <!-- Pilihan Radio Button (Styling Ditingkatkan) -->
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg transition-all hover:bg-blue-500/10">
+                            <input type="radio" name="portal-color" value="#00d4ff" class="w-5 h-5" style="accent-color: var(--neon-blue);" checked>
+                            <span class="neon-text-blue font-bold font-orbitron">Blue</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg transition-all hover:bg-pink-500/10">
+                            <input type="radio" name="portal-color" value="#ff2a9e" class="w-5 h-5" style="accent-color: var(--neon-pink);">
+                            <span class="neon-text-pink font-bold font-orbitron">Pink</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg transition-all hover:bg-purple-500/10">
+                            <input type="radio" name="portal-color" value="#bf00ff" class="w-5 h-5" style="accent-color: var(--neon-purple);">
+                            <span class="neon-text-purple font-bold font-orbitron">Purple</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- Tombol Aksi Modal (Refactor) -->
+                <div class="flex justify-end space-x-3 pt-1">
+                    <button type="button" onclick="document.getElementById('add-portal-modal').classList.add('hidden')"
+                            class="btn-secondary px-5 py-2 text-sm">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="btn-neon btn-neon-blue px-6 py-2 text-sm">
+                        Create
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi (Refactor) -->
+    <div id="confirmation-modal" class="fixed inset-0 flex items-center justify-center z-[60] hidden modal-overlay">
+        <div class="modal-content rounded-xl p-8 max-w-sm w-full mx-4 relative text-center">
+            <h2 class="text-xl neon-text-pink mb-4 font-bold font-orbitron">Confirm Action</h2>
+            <p id="confirmation-message" class="mb-6 text-gray-300 font-rajdhani text-lg">Are you sure?</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-cancel-btn" class="btn-secondary px-6 py-2 text-sm">
+                    Cancel
+                </button>
+                <button id="confirm-ok-btn" class="btn-neon btn-neon-pink px-6 py-2 text-sm">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="import-file-input" class="hidden" accept=".zip,.txt,application/json">
+
+    <!-- FUNGSI JAVASCRIPT DARI KODE 1 (TIDAK BERUBAH) -->
+    <script>
+        // --- [MODIFIKASI] Aplikasi Portal Utama ---
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // [BARU] State variable untuk melacak status video
+            let isVideoFinished = false;
+
+            // --- [BARU] Logika Video Background ke Gambar ---
+            const bgVideo = document.getElementById('bg-video');
+            const bgImage = document.getElementById('bg-image');
+
+            if (bgVideo && bgImage) {
+                // Handler saat video selesai
+                const handleVideoEnd = () => {
+                    bgVideo.style.opacity = '0';
+                    // Cek apakah light mode aktif saat video berakhir
+                    // Jika tidak, set ke 0.35. Jika iya, biarkan CSS (opacity: 1 !important) yang menangani
+                    if (!document.body.classList.contains('light-mode')) {
+                        bgImage.style.opacity = '0.35'; // Fade ke opasitas asli gambar (0.35)
+                    }
+                    isVideoFinished = true; // [BARU] Set status video selesai
+                };
+
+                // Handler jika video error
+                const handleVideoError = (e) => {
+                    console.error("Video background gagal diputar:", e);
+                    handleVideoEnd(); // Langsung tampilkan gambar
+                };
+                
+                bgVideo.addEventListener('ended', handleVideoEnd);
+                bgVideo.addEventListener('error', handleVideoError);
+
+                // Coba putar video, tangani kegagalan autoplay
+                const playPromise = bgVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.warn("Autoplay video background diblokir/gagal:", error);
+                        // Jika autoplay gagal, langsung panggil handleVideoEnd
+                        // untuk memudarkan ke gambar.
+                        handleVideoEnd();
+                    });
+                }
+            }
+            // --- [AKHIR BARU] ---
+
+            // [BARU] Deklarasi variabel logo
+            const logoContainer = document.getElementById('logo-container'); 
+            
+            const portalsGrid = document.getElementById('portals-grid');
+            const portalForm = document.getElementById('portal-form');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay'); // [BARU]
+            const timeDisplay = document.getElementById('time');
+            const dateDisplay = document.getElementById('date');
+            const importFileInput = document.getElementById('import-file-input');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const confirmationMessage = document.getElementById('confirmation-message');
+            const confirmOkBtn = document.getElementById('confirm-ok-btn');
+            const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
+            let portals = [];
+            let onConfirmCallback = null;
+
+            // Default portal (TIDAK BERUBAH)
+            const defaultPortals = [
+                { 
+                    name: 'Layla Premium Access', 
+                    url: 'https://api.whatsapp.com/send/?phone=6287872521809&text=Halo%2C+saya+ingin+membeli+Akses+Website+Premium+Tanpa+Iklan+sebesar+Rp25.000.+Mohon+transfer+ke+DANA+087734421123+dan+kirimkan+bukti+pembayarannya.+Pesanan+akan+diproses+maksimal+1x24+jam.+Terima+kasih.&type=phone_number&app_absent=0', 
+                    icon: 'fas fa-gem', 
+                    color: '#bf00ff', // Dipetakan ke --mlbb-purple
+                    description: 'Upgrade sekarang — akses semua website uranus tanpa iklan cuma Rp25K' 
+                },
+                { 
+                    name: 'Buy Layla Nexus Sea Code', 
+                    url: 'https://api.whatsapp.com/send/?phone=6287872521809&text=Halo%2C+saya+ingin+membeli+Kode+Website+MLBB+Layla+Skin+Nexus+Sea+sebesar+Rp100.000.+Mohon+transfer+ke+DANA+087734421123+dan+kirimkan+bukti+pembayarannya.+Pesanan+akan+diproses+maksimal+1x24+jam.+Terima+kasih.&type=phone_number&app_absent=0', 
+                    icon: 'fas fa-shopping-cart', 
+                    color: '#00f0ff', // Dipetakan ke --mlbb-blue
+                    description: 'Beli kode website MLBB Layla Nexus Sea edisi premium seharga Rp100K' 
+                }
+            ];
+
+            function initPortalApp() {
+                portals = JSON.parse(localStorage.getItem('portals')) || defaultPortals;
+                renderPortals();
+                updateTime();
+                setInterval(updateTime, 1000);
+
+                // --- [BARU] Event listener untuk light mode toggle ---
+                logoContainer.addEventListener('click', () => {
+                    
+                    // [MODIFIKASI] Tambahkan pengecekan apakah video sudah selesai
+                    if (!isVideoFinished) {
+                        console.log("Mode terang dikunci hingga video selesai.");
+                        return; // Hentikan fungsi jika video belum selesai
+                    }
+
+                    document.body.classList.toggle('light-mode');
+                    
+                    // [BARU] Logika tambahan untuk menangani opacity gambar
+                    if (!document.body.classList.contains('light-mode') && bgVideo.style.opacity === '0') {
+                         bgImage.style.opacity = '0.35';
+                    }
+                });
+                // --- [AKHIR BARU] ---
+
+
+                // [MODIFIKASI] Event listener menu mobile
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.add('open');
+                    mobileMenuOverlay.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                });
+
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu); // [BARU]
+
+                // Fungsionalitas inti (TIDAK BERUBAH)
+                portalForm.addEventListener('submit', handlePortalFormSubmit);
+                importFileInput.addEventListener('change', handleFileImport);
+                confirmCancelBtn.addEventListener('click', () => confirmationModal.classList.add('hidden'));
+                confirmOkBtn.addEventListener('click', () => {
+                    if (typeof onConfirmCallback === 'function') {
+                        onConfirmCallback();
+                    }
+                    confirmationModal.classList.add('hidden');
+                    onConfirmCallback = null;
+                });
+            }
+
+            // [BARU] Fungsi untuk menutup menu mobile
+            window.closeMobileMenu = function() {
+                mobileMenu.classList.remove('open');
+                mobileMenuOverlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            window.showConfirmationModal = function(message, callback) {
+                confirmationMessage.textContent = message;
+                onConfirmCallback = callback;
+                confirmationModal.classList.remove('hidden');
+            }
+
+            // --- [MODIFIKASI] Render Kartu Portal ---
+            function renderPortals() {
+                portalsGrid.innerHTML = '';
+
+                portals.forEach((portal, index) => {
+                    const portalElement = document.createElement('div');
+                    // 'h-full' ditambahkan agar semua kartu sama tinggi
+                    portalElement.className = 'h-full'; 
+
+                    const portalColor = portal.color || '#00d4ff'; // Warna default baru
+                    // [ADAPTASI] Style untuk kartu, 'color' akan digunakan oleh CSS untuk bayangan & ikon
+                    const cardStyle = `color: ${portalColor}; border-color: ${portalColor};`;
+                    // [ADAPTASI] Style untuk teks, 'color' akan digunakan oleh CSS
+                    const textStyle = `color: ${portalColor}; text-shadow: 0 0 10px ${portalColor};`;
+                    
+                    // Ikon default jika tidak ada ikon atau ikon tidak valid
+                    let iconClass = portal.icon || 'fas fa-globe';
+                    if (!portal.icon || (!portal.icon.startsWith('fa') && !portal.icon.startsWith('http') && !portal.icon.startsWith('data:image'))) {
+                        iconClass = 'fas fa-globe'; 
+                    }
+
+                    // [ADAPTASI] Ukuran ikon diatur oleh CSS (.portal-card i)
+                    const iconHtml = (iconClass.startsWith('data:image') || iconClass.startsWith('http'))
+                        ? `<img src="${iconClass}" class="mx-auto" alt="${portal.name} icon" onerror="this.style.display='none'; this.nextSibling.style.display='block';">` + // Fallback
+                          `<i class="fas fa-globe hidden" style="${textStyle}"></i>`
+                        : `<i class="${iconClass}" style="${textStyle}"></i>`;
+
+                    // Deskripsi dengan spasi non-breaking
+                    const descriptionHtml = portal.description ? portal.description : '&nbsp;';
+
+                    // [ADAPTASI] Struktur HTML kartu disesuaikan agar cocok dengan style Kode 1
+                    portalElement.innerHTML = `
+                        <div class="portal-card h-full" style="${cardStyle}">
+                            <a href="${portal.url}" target="_blank" class="block h-full p-6 text-center relative flex flex-col justify-start">
+                                <!-- Konten Kartu -->
+                                <div class="relative z-10 flex-grow flex flex-col items-center justify-center">
+                                    ${iconHtml}
+                                    <h3 class="font-bold uppercase tracking-wider break-words text-lg mb-2 font-orbitron" style="${textStyle}">${portal.name}</h3>
+                                    <p class="text-sm text-gray-300 mt-2 leading-normal font-rajdhani">${descriptionHtml}</p>
+                                </div>
+                                
+                                <!-- Tombol Hapus (Styling Baru) -->
+                                <button onclick="event.preventDefault(); event.stopPropagation(); showConfirmationModal('Yakin ingin menghapus portal ${portal.name}?', () => deletePortalAction(${index}))"
+                                        class="delete-btn">
+                                    <i class="fas fa-times text-sm"></i>
+                                </button>
+                            </a>
+                        </div>
+                    `;
+
+                    portalsGrid.appendChild(portalElement);
+                });
+            }
+
+            // --- Fungsionalitas Inti (TIDAK BERUBAH) ---
+
+            function handlePortalFormSubmit(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('portal-name').value;
+                const url = document.getElementById('portal-url').value || "#";
+                const description = document.getElementById('portal-description').value || "";
+                
+                // [PERUBAHAN DIMULAI] Ambil nilai ikon dari select
+                const icon = document.getElementById('portal-icon').value;
+                // [PERUBAHAN SELESAI]
+                
+                const color = document.querySelector('input[name="portal-color"]:checked').value;
+
+                addPortalToArray(name, url, icon, color, description);
+            }
+
+            function addPortalToArray(name, url, icon, color, description) {
+                portals.push({ name, url, icon, color, description });
+                savePortals();
+                renderPortals();
+                document.getElementById('add-portal-modal').classList.add('hidden');
+                resetPortalForm();
+            }
+
+            window.deletePortalAction = function(index) {
+                portals.splice(index, 1);
+                savePortals();
+                renderPortals();
+            }
+
+            function resetPortalForm() {
+                portalForm.reset();
+            }
+
+            function savePortals() {
+                localStorage.setItem('portals', JSON.stringify(portals));
+            }
+
+            window.showAddLinkModal = function() {
+                document.getElementById('add-portal-modal').classList.remove('hidden');
+                resetPortalForm();
+                if (mobileMenu.classList.contains('open')) { // Tutup menu mobile jika sedang terbuka
+                    closeMobileMenu();
+                }
+            }
+
+            function updateTime() {
+                const now = new Date();
+                timeDisplay.textContent = now.toLocaleTimeString('en-GB');
+                dateDisplay.textContent = now.toLocaleDateString('id-ID', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            window.resetAllSettings = function() {
+                localStorage.removeItem('portals');
+                location.reload();
+            }
+
+            window.backupData = async () => {
+                const dataToBackup = {
+                    portals: JSON.parse(localStorage.getItem('portals')) || defaultPortals,
+                };
+                const dataStr = JSON.stringify(dataToBackup, null, 2);
+                try {
+                    const zip = new JSZip();
+                    zip.file("uranusfazry_backup.json", dataStr);
+                    const content = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'uranusfazry_backup.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error("Error creating ZIP file:", error);
+                    alert("Gagal membuat file backup ZIP.");
+                }
+            };
+
+            window.importData = () => {
+                importFileInput.click();
+            };
+
+            async function handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (file.type === "application/zip" || file.name.endsWith(".zip")) {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        try {
+                            const zip = await JSZip.loadAsync(e.target.result);
+                            const backupFile = zip.file("uranusfazry_backup.json");
+                            if (backupFile) {
+                                const jsonContent = await backupFile.async("string");
+                                await processImportedData(jsonContent);
+                            } else {
+                                alert('File ZIP tidak valid: "uranusfazry_backup.json" tidak ditemukan.');
+                            }
+                        } catch (error) {
+                            console.error('Error reading ZIP file:', error);
+                            alert('Gagal membaca file ZIP. File mungkin rusak.');
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else if (file.type === "text/plain" || file.type === "application/json" || file.name.endsWith(".txt")) {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        await processImportedData(e.target.result);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    alert("Tipe file tidak didukung. Silakan unggah file backup .zip atau .txt.");
+                }
+                event.target.value = '';
+            }
+
+            async function processImportedData(jsonContent) {
+                try {
+                    const importedData = JSON.parse(jsonContent);
+                    if (importedData && Array.isArray(importedData.portals)) {
+                        localStorage.setItem('portals', JSON.stringify(importedData.portals));
+                        showConfirmationModal('Data berhasil diimpor. Halaman akan dimuat ulang.', () => {
+                            location.reload();
+                        });
+                    } else {
+                        alert('Format file backup tidak valid.');
+                    }
+                } catch (error) {
+                    console.error('Error parsing backup file:', error);
+                    alert('Gagal membaca file backup. File mungkin rusak atau formatnya salah.');
+                }
+            }
+
+            initPortalApp();
+        });
+    </script>
+
+</body>
+</html>
