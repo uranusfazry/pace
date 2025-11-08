@@ -50,6 +50,11 @@
             /* [PERBAIKAN FOOTER] (dari Kode 1) */
             display: flex;
             flex-direction: column;
+
+            /* [PENAMBAHAN] Font dipertajam */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         /* Helper Class untuk Font (Diadaptasi ke font Kode 2) */
@@ -96,7 +101,8 @@
 
         /* Fitur Light Mode (dari Kode 1) dipertahankan untuk JS */
         body.light-mode #bg-image {
-            opacity: 1 !important; 
+            opacity: 1 !important;
+            filter: saturate(1.15); 
         }
         body.light-mode #bg-video {
             opacity: 0.35;
@@ -477,15 +483,15 @@
 
         /* Ikon Kartu (dari Kode 2, diterapkan ke elemen <i> dan <img> Kode 1) */
         .portal-card .z-10 i, .portal-card .z-10 img {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 0 15px currentColor);
-    animation: float 3s ease-in-out infinite; /* Animasi tetap di sini */
-    height: 48px; 
-    width: 48px;
-    object-fit: contain;
-    margin-left: auto;
-    margin-right: auto;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 15px currentColor);
+            animation: float 3s ease-in-out infinite; /* Animasi tetap di sini */
+            height: 48px; 
+            width: 48px;
+            object-fit: contain;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         @keyframes float {
@@ -868,7 +874,7 @@
                         <option value="fas fa-info-circle">ℹ️ Info</option>
                         <option value="fab fa-whatsapp">💬 WhatsApp</option>
                         <option value="fab fa-facebook">👍 Facebook</option>
-                        <option value="fab fa-instagram">📸 Instagram</option>
+                        <option value."fab fa-instagram">📸 Instagram</option>
                         <option value="fab fa-youtube">▶️ YouTube</option>
                         <option value="fab fa-tiktok">🎵 TikTok</option>
                         <option value="fab fa-discord">🗣️ Discord</option>
