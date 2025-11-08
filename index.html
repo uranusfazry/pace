@@ -477,17 +477,16 @@
         }
 
         /* Ikon Kartu (dari Kode 2, diterapkan ke elemen <i> dan <img> Kode 1) */
-        .portal-card i, .portal-card img {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 15px currentColor);
-            animation: float 3s ease-in-out infinite;
-            /* [ADAPTASI] dari Kode 1 untuk konsistensi <img> */
-            height: 48px; 
-            width: 48px;
-            object-fit: contain;
-            margin-left: auto;
-            margin-right: auto;
+        .portal-card .z-10 i, .portal-card .z-10 img {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 15px currentColor);
+    animation: float 3s ease-in-out infinite; /* Animasi tetap di sini */
+    height: 48px; 
+    width: 48px;
+    object-fit: contain;
+    margin-left: auto;
+    margin-right: auto;
         }
 
         @keyframes float {
