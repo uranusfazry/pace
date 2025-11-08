@@ -1081,7 +1081,7 @@
             }
 
             // --- [MODIFIKASI] Render Kartu Portal ---
-            function renderPortals() {
+        function renderPortals() {
                 portalsGrid.innerHTML = '';
 
                 portals.forEach((portal, index) => {
@@ -1112,10 +1112,10 @@
 
                     // [ADAPTASI] Struktur HTML kartu disesuaikan agar cocok dengan style Kode 1
                     portalElement.innerHTML = `
-                        <div class="portal-card h-full" style="${cardStyle}">
-                            <a href="${portal.url}" target="_blank" class="block h-full p-6 text-center relative flex flex-col justify-start">
-                                <!-- Konten Kartu -->
-                                <div class="relative z-10 flex-grow flex flex-col items-center justify-center">
+                    <div class="portal-card h-full" style="${cardStyle}">
+                        <a href="${portal.url}" target="_blank" class="block h-full p-6 text-center flex flex-col justify-start">
+                            <!-- Konten Kartu -->
+                            <div class="relative z-10 flex-grow flex flex-col items-center justify-center">
                                     ${iconHtml}
                                     <h3 class="font-bold uppercase tracking-wider break-words text-lg mb-2 font-orbitron" style="${textStyle}">${portal.name}</h3>
                                     <p class="text-sm text-gray-300 mt-2 leading-normal font-rajdhani">${descriptionHtml}</p>
