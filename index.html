@@ -97,7 +97,7 @@
         /* Fitur Light Mode (dari Kode 1) dipertahankan untuk JS */
         body.light-mode #bg-image {
             opacity: 1 !important; 
-            filter: brightness(1.2) contrast(1.05) saturate(1.15);
+            filter: saturate(1.15);
         }
         body.light-mode #bg-video {
             opacity: 0.35;
@@ -220,7 +220,7 @@
         }
         @media (min-width: 768px) {
             .navbar .container > div {
-                height: 90px;
+                height: 70px;
             }
         }
 
@@ -798,7 +798,7 @@
 
 
     <!-- Main Content (Refactor) -->
-    <main class="container mx-auto px-4 py-8 relative content-layer pt-28">
+    <main class="container mx-auto px-4 py-8 relative content-layer pt-20">
         <header class="text-center mb-12">
             <!-- Profile (MODIFIKASI: Diubah dari <img> menjadi <video>) -->
             <div class="profile">
